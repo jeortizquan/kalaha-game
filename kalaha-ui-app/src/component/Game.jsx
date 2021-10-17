@@ -28,7 +28,8 @@ class Game extends React.Component {
       gameId: newGameId,
       pits: initialStatus.status,
       message: '',
-      turn: 'SOUTH'
+      turn: 'SOUTH',
+      kstatus: undefined
     });
   }
 
@@ -43,13 +44,31 @@ class Game extends React.Component {
                          .then(response => response.json())
                          .catch(error => error.json())
         if (move.error === undefined) {
-            this.setState({ pits: move.status, turn: move.turn, message: '' });
+            this.setState({ pits: move.status,
+                            turn: move.turn,
+                            message: '',
+                            kstatus: move.kstatus
+                          });
         } else {
             this.setState({ message: move.message });
         }
     } catch(error) {
         console.log(error);
     }
+  }
+
+  getWinner() {
+    let south = this.state.pits[7];
+    let north = this.state.pits[14];
+    let msg = 'Player';
+    if (south > north) {
+        msg += ' SOUTH win!';
+    } else if (south < north) {
+        msg += ' NORTH win!';
+    } else if (south === north) {
+        msg += 's are in a tie game';
+    }
+    return msg;
   }
 
   render() {
@@ -60,7 +79,12 @@ class Game extends React.Component {
         turn = 'Player '+ (this.state.turn) +' turn';
     }
 
-    status = this.state.message;
+    if  (this.state.kstatus === 'IN_PROGRESS' || this.state.kstatus === undefined) {
+        status = this.state.message;
+    } else {
+        status = 'Click New to begin game.';
+        turn = this.getWinner();
+    }
 
     return (
         <div className="game">

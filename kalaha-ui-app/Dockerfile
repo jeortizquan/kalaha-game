@@ -1,9 +1,18 @@
-FROM node:latest as production
+FROM node:latest as base
 MAINTAINER  Jorge Ortiz <jeortiz.quan@gmail.com>
-RUN mkdir -p /usr/src/app
-WORKDIR /usr/src/app
-COPY package.json /usr/src/app/
+RUN mkdir -p /app
+WORKDIR /app
+COPY package.json /app/
 RUN npm install
-COPY . /usr/src/app
+RUN npm install react-scripts@4.0.3 -g
+COPY . /app
+
+FROM base as development
+CMD ["npm","run","start"]
+EXPOSE 3000
+
+FROM base as production
+RUN npm run build --production
+RUN npm install serve -g
 EXPOSE 5000
-CMD [ "npm", "start" ]
+CMD serve -s build
