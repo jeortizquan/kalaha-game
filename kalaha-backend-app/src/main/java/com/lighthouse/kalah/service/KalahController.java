@@ -83,6 +83,7 @@ public class KalahController {
             jsonObject.addProperty("id", String.valueOf(gameId));
             jsonObject.addProperty("url", location.toString());
             jsonObject.addProperty("turn", board.getTurn().toString());
+            jsonObject.addProperty("kstatus", board.gameHasEnded().toString());
             JsonObject jsonStatus = new JsonObject();
             for (int sId = 1; sId <= 14; sId++) {
                 jsonStatus.addProperty(String.valueOf(sId), board.getStatus().get(sId).toString());
@@ -124,6 +125,7 @@ public class KalahController {
             jsonObject.addProperty("id", String.valueOf(gameId));
             jsonObject.addProperty("url", location.toString());
             jsonObject.addProperty("turn", board.getTurn().toString());
+            jsonObject.addProperty("kstatus", board.gameHasEnded().toString());
             JsonObject jsonStatus = new JsonObject();
             for (int sId = 1; sId <= 14; sId++) {
                 jsonStatus.addProperty(String.valueOf(sId), board.getStatus().get(sId).toString());
