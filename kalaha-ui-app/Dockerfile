@@ -8,8 +8,12 @@ RUN npm install react-scripts@4.0.3 -g
 COPY . /app
 
 FROM base as development
-CMD ["npm","run","start"]
+CMD ["npm","start"]
 EXPOSE 3000
+
+FROM base as build
+RUN npm run build --production
+RUN npm install serve -g
 
 FROM base as production
 RUN npm run build --production

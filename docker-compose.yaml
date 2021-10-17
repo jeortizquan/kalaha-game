@@ -6,10 +6,8 @@ services:
       context: ./kalaha-ui-app
       target: production
       dockerfile: Dockerfile
-    volumes:
-      - ./kalaha-ui-app:/app
     ports:
-      - 5000:3000
+      - 5000:5000
     depends_on:
       - kalaha-backend-app
 
@@ -19,7 +17,5 @@ services:
       context: ./kalaha-backend-app
       target: production
       dockerfile: Dockerfile
-    volumes:
-      - ./kalaha-backend-app:/app
     ports:
       - 8000:8000

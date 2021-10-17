@@ -68,7 +68,7 @@ docker-compose up -d
 
 Default address and port for Kalah Game User Interface
 ```
-http://localhost:3000
+http://localhost:5000
 ```
 
 Default address and port for Kalah Game Backend API
