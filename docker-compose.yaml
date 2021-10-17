@@ -1,0 +1,25 @@
+version: '3.9'
+services:
+  kalaha-ui-app:
+    container_name: kalaha-ui-app
+    build:
+      context: ./kalaha-ui-app
+      target: production
+      dockerfile: Dockerfile
+    volumes:
+      - .:/usr/src/app
+    ports:
+      - 5000:5000
+    depends_on:
+      - kalaha-backend-app
+
+  kalaha-backend-app:
+    container_name: kalaha-backend-app
+    build:
+      context: ./kalaha-backend-app
+      target: production
+      dockerfile: Dockerfile
+    volumes:
+      - .kalaha-backend-app/src:/
+    ports:
+      - 8000:8000

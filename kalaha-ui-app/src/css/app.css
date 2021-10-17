@@ -1,0 +1,23 @@
+.section {
+    background-color: grey;
+}
+.north-container {
+    display: flex;
+    background-color: cyan;
+}
+.south-container {
+    display: flex;
+    background-color: darkcyan;
+}
+.pit {
+    width:125px; height:125px;
+    margin:10px;
+    border-radius: 20px;
+    background-color:white;
+    cursor:pointer;
+}
+.kalahah {
+    width: 125px; height: 250px;
+    margin:20px;
+    border-radius:20px;
+}
