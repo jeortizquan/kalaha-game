@@ -54,9 +54,9 @@ MacOS/Linux
 ```
 
 5. Swagger
-You can use swagger UI to tryout the API
+You can use swagger UI to try out the API
 ```
-http://localhost:8080/swagger-ui.html
+http://localhost:8000/swagger-ui.html
 ```
 
 6. Metrics & Health Check

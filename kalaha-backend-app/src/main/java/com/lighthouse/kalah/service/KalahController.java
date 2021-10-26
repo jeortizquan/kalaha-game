@@ -19,7 +19,7 @@ import java.time.LocalDateTime;
 @RestController
 public class KalahController {
 
-    public static final Logger logger = LoggerFactory.getLogger(KalahController.class);
+    public static final Logger LOGGER = LoggerFactory.getLogger(KalahController.class);
 
     @Autowired
     private Game service;
@@ -42,26 +42,12 @@ public class KalahController {
                     .path("/{id}")
                     .buildAndExpand(gameId)
                     .toUri();
-            logger.info("Game created id: {}", gameId);
+            LOGGER.info("Game created id: {}", gameId);
 
-            JsonObject jsonObject = new JsonObject();
-            jsonObject.addProperty("id", String.valueOf(gameId));
-            jsonObject.addProperty("uri", location.toString());
-            responseEntity = ResponseEntity
-                    .created(location)
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .body(gson.toJson(jsonObject));
+            responseEntity = getSuccessResponseEntity(gameId, location);
 
         } catch (Exception ex) {
-            JsonObject jsonObject = new JsonObject();
-            jsonObject.addProperty("timestamp", LocalDateTime.now().toString());
-            jsonObject.addProperty("status", "500");
-            jsonObject.addProperty("error", "Failed to create game");
-            jsonObject.addProperty("message", ex.getMessage());
-            responseEntity = ResponseEntity
-                    .status(500)
-                    .body(gson.toJson(jsonObject));
-            logger.error("Response: {}", gson.toJson(jsonObject));
+            responseEntity = getErrorResponseEntity(ex, "Failed to create game");
         }
         return responseEntity;
     }
@@ -77,34 +63,12 @@ public class KalahController {
                     .path("/games/{gameId}")
                     .buildAndExpand(gameId)
                     .toUri();
-            logger.info("Moving in gameid: {} with pitId: {}", gameId, pitId);
+            LOGGER.info("Moving in gameid: {} with pitId: {}", gameId, pitId);
 
-            JsonObject jsonObject = new JsonObject();
-            jsonObject.addProperty("id", String.valueOf(gameId));
-            jsonObject.addProperty("url", location.toString());
-            jsonObject.addProperty("turn", board.getTurn().toString());
-            jsonObject.addProperty("kstatus", board.gameHasEnded().toString());
-            JsonObject jsonStatus = new JsonObject();
-            for (int sId = 1; sId <= 14; sId++) {
-                jsonStatus.addProperty(String.valueOf(sId), board.getStatus().get(sId).toString());
-            }
-            jsonObject.add("status", jsonStatus);
-            responseEntity = ResponseEntity
-                    .ok()
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .body(gson.toJson(jsonObject));
-            logger.info("Response: {}", gson.toJson(jsonObject));
+            responseEntity = getSuccessResponseEntity(gameId, location, board);
 
         } catch (Exception ex) {
-            JsonObject jsonObject = new JsonObject();
-            jsonObject.addProperty("timestamp", LocalDateTime.now().toString());
-            jsonObject.addProperty("status", "500");
-            jsonObject.addProperty("error", "Failed to move");
-            jsonObject.addProperty("message", ex.getMessage());
-            responseEntity = ResponseEntity
-                    .status(500)
-                    .body(gson.toJson(jsonObject));
-            logger.error("Response: {}", gson.toJson(jsonObject));
+            responseEntity = getErrorResponseEntity(ex, "Failed to move");
         }
         return responseEntity;
     }
@@ -119,35 +83,57 @@ public class KalahController {
                     .path("/games/{gameId}")
                     .buildAndExpand(gameId)
                     .toUri();
-            logger.info("Getting status of gameid: {}", gameId);
+            LOGGER.info("Getting status of gameid: {}", gameId);
 
-            JsonObject jsonObject = new JsonObject();
-            jsonObject.addProperty("id", String.valueOf(gameId));
-            jsonObject.addProperty("url", location.toString());
-            jsonObject.addProperty("turn", board.getTurn().toString());
-            jsonObject.addProperty("kstatus", board.gameHasEnded().toString());
-            JsonObject jsonStatus = new JsonObject();
-            for (int sId = 1; sId <= 14; sId++) {
-                jsonStatus.addProperty(String.valueOf(sId), board.getStatus().get(sId).toString());
-            }
-            jsonObject.add("status", jsonStatus);
-            responseEntity = ResponseEntity
-                    .ok()
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .body(gson.toJson(jsonObject));
-            logger.info("Response: {}", gson.toJson(jsonObject));
+            responseEntity = getSuccessResponseEntity(gameId, location, board);
 
         } catch (Exception ex) {
-            JsonObject jsonObject = new JsonObject();
-            jsonObject.addProperty("timestamp", LocalDateTime.now().toString());
-            jsonObject.addProperty("status", "500");
-            jsonObject.addProperty("error", "Failed to move");
-            jsonObject.addProperty("message", ex.getMessage());
-            responseEntity = ResponseEntity
-                    .status(500)
-                    .body(gson.toJson(jsonObject));
-            logger.error("Response: {}", gson.toJson(jsonObject));
+            responseEntity = getErrorResponseEntity(ex, "Failed to move");
         }
+        return responseEntity;
+    }
+
+    private ResponseEntity<Object> getErrorResponseEntity(Exception ex, String errorMessage) {
+        JsonObject jsonObject = new JsonObject();
+        jsonObject.addProperty("timestamp", LocalDateTime.now().toString());
+        jsonObject.addProperty("status", "500");
+        jsonObject.addProperty("error", errorMessage);
+        jsonObject.addProperty("message", ex.getMessage());
+
+        LOGGER.error("Response: {}", gson.toJson(jsonObject));
+        return ResponseEntity
+                .status(500)
+                .body(gson.toJson(jsonObject));
+    }
+
+    private ResponseEntity<Object> getSuccessResponseEntity(Integer gameId, URI location, Kalahah board) {
+        JsonObject jsonObject = new JsonObject();
+        jsonObject.addProperty("id", String.valueOf(gameId));
+        jsonObject.addProperty("url", location.toString());
+        jsonObject.addProperty("turn", board.getTurn().toString());
+        jsonObject.addProperty("kstatus", board.kalahahStatus().toString());
+        JsonObject jsonStatus = new JsonObject();
+        for (int sId = 1; sId <= 14; sId++) {
+            jsonStatus.addProperty(String.valueOf(sId), board.getStatus().get(sId).toString());
+        }
+        jsonObject.add("status", jsonStatus);
+
+        LOGGER.info("Response: {}", gson.toJson(jsonObject));
+        return ResponseEntity
+                .ok()
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(gson.toJson(jsonObject));
+    }
+    
+    private ResponseEntity<Object> getSuccessResponseEntity(int gameId, URI location) {
+        ResponseEntity<Object> responseEntity;
+        JsonObject jsonObject = new JsonObject();
+        jsonObject.addProperty("id", String.valueOf(gameId));
+        jsonObject.addProperty("uri", location.toString());
+        responseEntity = ResponseEntity
+                .created(location)
+                .contentType(MediaType.APPLICATION_JSON)
+                .body(gson.toJson(jsonObject));
         return responseEntity;
     }
 }

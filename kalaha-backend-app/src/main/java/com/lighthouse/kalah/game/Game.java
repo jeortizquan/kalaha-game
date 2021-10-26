@@ -7,7 +7,7 @@ public class Game {
 
     private static final int NEW_GAME_ATTEMPT_LIMIT = 5;
     private static final int STONES_LIMIT = 6;
-    public ConcurrentHashMap<Integer, Kalahah> games;
+    public final ConcurrentHashMap<Integer, Kalahah> games;
 
     public Game(ConcurrentHashMap<Integer, Kalahah> gameList) {
         this.games = gameList;
