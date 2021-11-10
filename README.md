@@ -1,7 +1,11 @@
 # Table of Contents
 - [Table of Contents](#table-of-contents)
 - [About the Project](#about-the-project)
-- [Functional Requirements](#functional-requirements)
+- [Board Setup](#board-setup)
+- [Rules](#rules)
+  - [Game Play](#game-play)
+  - [Capturing Stones](#capturing-stones)
+  - [The Game Ends](#the-game-ends)
 - [Built With](#built-with)
 - [Getting Started](#getting-started)
 - [Prerequisites](#prerequisites)
