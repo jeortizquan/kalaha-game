@@ -2,80 +2,111 @@ package com.lighthouse.kalah;
 
 import com.lighthouse.kalah.game.Kalahah;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
+import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Stream;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static com.lighthouse.kalah.TestTools.expectedBoardPebbles;
+import static com.lighthouse.kalah.game.Kalahah.KALAH_PLAYER_NORTH;
+import static com.lighthouse.kalah.game.Kalahah.KALAH_PLAYER_SOUTH;
+import static java.util.Arrays.asList;
+import static org.junit.jupiter.api.Assertions.*;
 
+/**
+ * Unit tests {@link Kalahah}
+ *
+ * @author Jorge Ortiz
+ */
 public class KalahahUnitTests {
 
     @Test
     public void setupBoard() {
         Kalahah board = new Kalahah(6);
-        for (int pitId = 1; pitId < 15; pitId++) {
-            if (pitId != Kalahah.KALAH_PLAYER_SOUTH && pitId != Kalahah.KALAH_PLAYER_NORTH) {
-                assertEquals(6, board.getStatus().get(pitId));
-            } else {
-                assertEquals(0, board.getStatus().get(pitId));
-            }
+        assertBoard(asList(6, 6, 6, 6, 6, 6, 0, 6, 6, 6, 6, 6, 6, 0), board);
+    }
+
+    /**
+     * Method source provideMovesToBoard
+     * 13 12 11 10  9  8
+     * 6  6  6  6  6  6
+     * 14 0              1 7
+     * 0  7  7  7  7  7
+     * 1  2  3  4  5  6
+     *
+     * @return Arguments Parameter Tests
+     */
+    private static Stream<Arguments> provideSouthMovesToBoard() {
+        return Stream.of(
+                Arguments.of(1, asList(0, 7, 7, 7, 7, 7, 1, 6, 6, 6, 6, 6, 6, 0), ""),
+                Arguments.of(2, asList(6, 0, 7, 7, 7, 7, 1, 7, 6, 6, 6, 6, 6, 0), ""),
+                Arguments.of(3, asList(6, 6, 0, 7, 7, 7, 1, 7, 7, 6, 6, 6, 6, 0), ""),
+                Arguments.of(4, asList(6, 6, 6, 0, 7, 7, 1, 7, 7, 7, 6, 6, 6, 0), ""),
+                Arguments.of(5, asList(6, 6, 6, 6, 0, 7, 1, 7, 7, 7, 7, 6, 6, 0), ""),
+                Arguments.of(6, asList(6, 6, 6, 6, 6, 0, 1, 7, 7, 7, 7, 7, 6, 0), ""),
+                Arguments.of(KALAH_PLAYER_SOUTH, asList(6, 6, 6, 6, 6, 6, 0, 6, 6, 6, 6, 6, 6, 0), "Invalid move this is a Kalahah"),
+                Arguments.of(8, asList(6, 6, 6, 6, 6, 6, 0, 6, 6, 6, 6, 6, 6, 0), "Player SOUTH cannot move pieces from this pit"),
+                Arguments.of(9, asList(6, 6, 6, 6, 6, 6, 0, 6, 6, 6, 6, 6, 6, 0), "Player SOUTH cannot move pieces from this pit"),
+                Arguments.of(10, asList(6, 6, 6, 6, 6, 6, 0, 6, 6, 6, 6, 6, 6, 0), "Player SOUTH cannot move pieces from this pit"),
+                Arguments.of(11, asList(6, 6, 6, 6, 6, 6, 0, 6, 6, 6, 6, 6, 6, 0), "Player SOUTH cannot move pieces from this pit"),
+                Arguments.of(12, asList(6, 6, 6, 6, 6, 6, 0, 6, 6, 6, 6, 6, 6, 0), "Player SOUTH cannot move pieces from this pit"),
+                Arguments.of(13, asList(6, 6, 6, 6, 6, 6, 0, 6, 6, 6, 6, 6, 6, 0), "Player SOUTH cannot move pieces from this pit"),
+                Arguments.of(KALAH_PLAYER_NORTH, asList(6, 6, 6, 6, 6, 6, 0, 6, 6, 6, 6, 6, 6, 0), "Invalid move this is a Kalahah")
+        );
+    }
+
+    @ParameterizedTest
+    @MethodSource("provideSouthMovesToBoard")
+    public void simpleMoveSouth(int pitId, List<Integer> expectedPebbles, String messageError) {
+        Kalahah board = new Kalahah(6);
+
+        if (pitId < 7) {
+            board.move(pitId);
+            assertBoard(expectedBoardPebbles(expectedPebbles), board);
+        } else {
+            RuntimeException expectedException = assertThrows(RuntimeException.class, () -> board.move(pitId));
+            assertTrue(expectedException.getMessage().contains(messageError));
+            assertBoard(expectedBoardPebbles(expectedPebbles), board);
         }
     }
 
-    @Test
-    public void simpleMove() {
-        //  13 12 11 10  9  8
-        //   6  6  6  6  6  6
-        //14 0              1 7
-        //   0  7  7  7  7  7
-        //   1  2  3  4  5  6
+    /**
+     * Method source
+     *             13 12 11 10  9  8
+     *              6  6  6  6  6  7
+     *           14 0              1 7
+     *              6  0  7  7  7  7
+     *              1  2  3  4  5  6
+     * @return
+     */
+    private static Stream<Arguments> provideNorthMovesToBoard() {
+        return Stream.of(
+                Arguments.of(1, asList(6, 0, 7, 7, 7, 7, 1, 7, 6, 6, 6, 6, 6, 0), "Player NORTH cannot move pieces from this pit"),
+                Arguments.of(2, asList(6, 0, 7, 7, 7, 7, 1, 7, 6, 6, 6, 6, 6, 0), "Player NORTH cannot move pieces from this pit"),
+                Arguments.of(3, asList(6, 6, 0, 7, 7, 7, 1, 7, 7, 6, 6, 6, 6, 0), "Player NORTH cannot move pieces from this pit"),
+                Arguments.of(4, asList(6, 6, 6, 0, 7, 7, 1, 7, 7, 7, 6, 6, 6, 0), "Player NORTH cannot move pieces from this pit"),
+                Arguments.of(5, asList(6, 6, 6, 6, 0, 7, 1, 7, 7, 7, 7, 6, 6, 0), "Player NORTH cannot move pieces from this pit"),
+                Arguments.of(6, asList(6, 6, 6, 6, 6, 0, 1, 7, 7, 7, 7, 7, 6, 0), "Player NORTH cannot move pieces from this pit"),
+                Arguments.of(KALAH_PLAYER_SOUTH, asList(6, 6, 6, 6, 6, 6, 0, 6, 6, 6, 6, 6, 6, 0), "Invalid move this is a Kalahah"),
+                Arguments.of(8, asList(6, 6, 6, 6, 6, 6, 0, 6, 6, 6, 6, 6, 6, 0), ""),
+                Arguments.of(9, asList(6, 6, 6, 6, 6, 6, 0, 6, 6, 6, 6, 6, 6, 0), ""),
+                Arguments.of(10, asList(6, 6, 6, 6, 6, 6, 0, 6, 6, 6, 6, 6, 6, 0), ""),
+                Arguments.of(11, asList(6, 6, 6, 6, 6, 6, 0, 6, 6, 6, 6, 6, 6, 0), ""),
+                Arguments.of(12, asList(6, 6, 6, 6, 6, 6, 0, 6, 6, 6, 6, 6, 6, 0), ""),
+                Arguments.of(13, asList(6, 6, 6, 6, 6, 6, 0, 6, 6, 6, 6, 6, 6, 0), ""),
+                Arguments.of(KALAH_PLAYER_NORTH, asList(6, 6, 6, 6, 6, 6, 0, 6, 6, 6, 6, 6, 6, 0), "Invalid move this is a Kalahah")
+        );
+    }
+    
+    @ParameterizedTest
+    @MethodSource("provideNorthMovesToBoard")
+    public void simpleMoveNorth(int pitId, List<Integer> expectedPebbles, String messageError) {
         Kalahah board = new Kalahah(6);
-        board.move(1);
-        assertEquals(0, board.getStatus().get(1));
-        assertEquals(7, board.getStatus().get(2));
-        assertEquals(7, board.getStatus().get(3));
-        assertEquals(7, board.getStatus().get(4));
-        assertEquals(7, board.getStatus().get(5));
-        assertEquals(7, board.getStatus().get(6));
-        assertEquals(1, board.getStatus().get(7));
-        assertEquals(6, board.getStatus().get(8));
-        assertEquals(6, board.getStatus().get(9));
-        assertEquals(6, board.getStatus().get(10));
-        assertEquals(6, board.getStatus().get(11));
-        assertEquals(6, board.getStatus().get(12));
-        assertEquals(6, board.getStatus().get(13));
-        assertEquals(0, board.getStatus().get(14));
-    }
-
-    @Test
-    public void invalidKalahMove() {
-        assertThrows(IllegalArgumentException.class, () -> {
-            Kalahah board = new Kalahah(6);
-            board.move(Kalahah.KALAH_PLAYER_NORTH);
-        });
-        assertThrows(IllegalArgumentException.class, () -> {
-            Kalahah board = new Kalahah(6);
-            board.move(Kalahah.KALAH_PLAYER_SOUTH);
-        });
-    }
-
-    @Test
-    public void invalidPitIdMoveForSouthTurn() {
-        assertThrows(RuntimeException.class, () -> {
-            Kalahah board = new Kalahah(6);
-            board.move(11);
-        });
-    }
-
-    @Test
-    public void invalidPitIdMoveForNorthTurn() {
-        Kalahah board = new Kalahah(6);
-        //  13 12 11 10  9  8
-        //   6  6  6  6  6  7
-        //14 0              1 7
-        //   6  0  7  7  7  7
-        //   1  2  3  4  5  6
         board.move(2); //south & change to north turn
+
         assertEquals(6, board.getStatus().get(1));
         assertEquals(0, board.getStatus().get(2));
         assertEquals(7, board.getStatus().get(3));
@@ -333,5 +364,9 @@ public class KalahahUnitTests {
         assertEquals(0, board.getStatus().get(13));
         assertEquals(43, board.getStatus().get(14));
         assertThrows(RuntimeException.class, () -> board.move(1));
+    }
+
+    private void assertBoard(List<Integer> expectedBoard, Kalahah actualBoard) {
+        assertEquals(expectedBoard, actualBoard.getStatus().values().stream().toList(), "unexpected pebbles");
     }
 }
