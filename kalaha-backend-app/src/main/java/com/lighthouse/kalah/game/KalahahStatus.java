@@ -5,6 +5,8 @@ package com.lighthouse.kalah.game;
  * IN_PROGRESS    : Both players still can make a move.
  * SOUTH_FINISHED : South player has six empty cups.
  * NORTH_FINISHED : North player has six empty cups.
+ *
+ * @author Jorge Ortiz
  */
 public enum KalahahStatus {
     IN_PROGRESS,

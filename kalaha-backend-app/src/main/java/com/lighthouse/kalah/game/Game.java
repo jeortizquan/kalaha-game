@@ -3,10 +3,15 @@ package com.lighthouse.kalah.game;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ThreadLocalRandom;
 
+/**
+ * Main Game class
+ *
+ * @author Jorge Ortiz
+ */
 public class Game {
 
-    private static final int NEW_GAME_ATTEMPT_LIMIT = 5;
-    private static final int STONES_LIMIT = 6;
+    private static final Integer NEW_GAME_ATTEMPT_LIMIT = 5;
+    private static final Integer STONES_LIMIT = 6;
     public final ConcurrentHashMap<Integer, Kalahah> games;
 
     public Game(ConcurrentHashMap<Integer, Kalahah> gameList) {
@@ -15,6 +20,7 @@ public class Game {
 
     /**
      * Creates a board game and places in the game list.
+     *
      * @return Integer Id of the Game
      */
     public Integer create() {
@@ -30,7 +36,8 @@ public class Game {
 
     /**
      * Checks if a board game already exists in the game list.
-     * @param gameId
+     *
+     * @param gameId Identifier of Game
      * @return boolean, true = exists, false = don't
      */
     private boolean exists(Integer gameId) {
@@ -39,8 +46,9 @@ public class Game {
 
     /**
      * Moves the stones according to game rules.
-     * @param gameId
-     * @param pitId
+     *
+     * @param gameId Identifier of Game
+     * @param pitId Number of pit to move pebbles
      * @return Kalahah board object with the correspondent move
      */
     public Kalahah move(Integer gameId, Integer pitId) {
@@ -56,7 +64,8 @@ public class Game {
 
     /**
      * Get Game
-     * @param gameId
+     *
+     * @param gameId Identifier of Game
      * @return Kalahah board object
      */
     public Kalahah getGame(Integer gameId) {

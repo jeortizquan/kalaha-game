@@ -96,13 +96,13 @@ public class KalahController {
     private ResponseEntity<Object> getErrorResponseEntity(Exception ex, String errorMessage) {
         JsonObject jsonObject = new JsonObject();
         jsonObject.addProperty("timestamp", LocalDateTime.now().toString());
-        jsonObject.addProperty("status", "500");
+        jsonObject.addProperty("status", "400");
         jsonObject.addProperty("error", errorMessage);
         jsonObject.addProperty("message", ex.getMessage());
 
         LOGGER.error("Response: {}", gson.toJson(jsonObject));
         return ResponseEntity
-                .status(500)
+                .status(400)
                 .body(gson.toJson(jsonObject));
     }
 

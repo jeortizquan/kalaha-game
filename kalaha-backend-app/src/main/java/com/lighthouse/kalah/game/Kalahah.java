@@ -13,8 +13,8 @@ public class Kalahah {
 
     public static final Integer KALAH_PLAYER_SOUTH = 7;
     public static final Integer KALAH_PLAYER_NORTH = 14;
-    public static final int GAMES_ORIGIN = 1000;
-    public static final int GAMES_LIMIT = 10000;
+    public static final Integer GAMES_ORIGIN = 1000;
+    public static final Integer GAMES_LIMIT = 10000;
 
     private final Integer stones;
     private Integer gameId;
@@ -50,7 +50,7 @@ public class Kalahah {
             if (isValidPit(pitId)) {
                 if (pitHasItems(pitId)) {
                     if (isValidToPickStonesFromPit(pitId, turn)) {
-                        int pitLastDestination = getLastPitDestinationAndPlaceStonesInTheBoard(pitId);
+                        final Integer pitLastDestination = getLastPitDestinationAndPlaceStonesInTheBoard(pitId);
                         // rule, if last stone is placed on kalah you have another turn
                         ruleCheckIfLastStonePlacedOnKalahThenYouHaveAnotherTurn(pitLastDestination);
                         // rule, The game is over as soon as one of the sides run out of stones
@@ -70,32 +70,32 @@ public class Kalahah {
     }
 
     private void ruleCheckGameHasEnded() {
-        int south = this.status.get(7);
-        int north = this.status.get(14);
+        final Integer south = this.status.get(7);
+        final Integer north = this.status.get(14);
         String msg = "Player";
         if (south > north)
             msg += " South win!";
         else if (south < north)
             msg += " North win!";
-        else if (south == north)
+        else if (south.equals(north))
             msg += "s are in a tie game";
         throw new RuntimeException("Game has ended, no more moves! " + msg);
     }
 
-    private int getLastPitDestinationAndPlaceStonesInTheBoard(Integer pitId) {
-        int pitStones = this.status.get(pitId);
+    private Integer getLastPitDestinationAndPlaceStonesInTheBoard(Integer pitId) {
+        Integer pitStones = this.status.get(pitId);
         //pickup the stones
         this.status.put(pitId, 0);
         //place stones counter-clockwise
-        int pitDestination = pitId;
+        Integer pitDestination = pitId;
         //do this while I have stones in my hand
         while (pitStones > 0) {
             pitDestination = pitDestination % 14 + 1;
 
             boolean wasEmpty = isEmptyPit(pitDestination);
             //only on my valid pits
-            if ((turn.equals(Player.SOUTH) && pitDestination != KALAH_PLAYER_NORTH) ||
-                    (turn.equals(Player.NORTH) && pitDestination != KALAH_PLAYER_SOUTH))
+            if ((turn.equals(Player.SOUTH) && !pitDestination.equals(KALAH_PLAYER_NORTH)) ||
+                    (turn.equals(Player.NORTH) && !pitDestination.equals(KALAH_PLAYER_SOUTH)))
                 this.status.put(pitDestination, this.status.get(pitDestination) + 1);
             else
                 pitStones++;
@@ -107,7 +107,9 @@ public class Kalahah {
         return pitDestination;
     }
 
-    private void ruleCheckIfLastStoneLandsOnEmptyPitPullOpponentStones(int pitStones, int pitDestination, boolean wasEmpty) {
+    private void ruleCheckIfLastStoneLandsOnEmptyPitPullOpponentStones(final Integer pitStones,
+                                                                       final Integer pitDestination,
+                                                                       boolean wasEmpty) {
         if (pitStones == 1 && wasEmpty) {
             // pull opponent stones if last n stone lands on empty pit and
             // the opponent has stones else do nothing the stone was placed yet.
@@ -126,7 +128,7 @@ public class Kalahah {
         }
     }
 
-    private void ruleCheckIfLastStonePlacedOnKalahThenYouHaveAnotherTurn(int pitDestination) {
+    private void ruleCheckIfLastStonePlacedOnKalahThenYouHaveAnotherTurn(final Integer pitDestination) {
         if (turn.equals(Player.SOUTH)) {
             if (isLastStonePlacedOnKalah(pitDestination, this.turn)) {
                 this.turn = Player.SOUTH;
@@ -147,8 +149,8 @@ public class Kalahah {
     }
 
     public KalahahStatus kalahahStatus() {
-        int southEmpty = 0;
-        int northEmpty = 0;
+        Integer southEmpty = 0;
+        Integer northEmpty = 0;
         for (int s = 1; s <= 6; s++)
             southEmpty += this.status.get(s);
         for (int n = 8; n <= 13; n++)
@@ -161,8 +163,8 @@ public class Kalahah {
     }
 
     public boolean isValidToPickStonesFromPit(final Integer pitId, final Player turn) {
-        return (turn.equals(Player.SOUTH) && pitId.intValue() >= 1 && pitId.intValue() <= 6) ||
-                (turn.equals(Player.NORTH) && pitId.intValue() >= 8 && pitId.intValue() <= 13);
+        return (turn.equals(Player.SOUTH) && pitId >= 1 && pitId <= 6) ||
+                (turn.equals(Player.NORTH) && pitId >= 8 && pitId <= 13);
     }
 
     public boolean isValidPit(final Integer pitId) {
@@ -171,7 +173,7 @@ public class Kalahah {
 
     private void moveRemainingStonesToKalah(final Integer pitId) {
         if (pitId.equals(KALAH_PLAYER_NORTH)) {
-            int northStones = 0;
+            Integer northStones = 0;
             //pickup the stones
             for (int n = 8; n <= 13; n++) {
                 northStones += this.status.get(n);
@@ -180,7 +182,7 @@ public class Kalahah {
             this.status.put(KALAH_PLAYER_NORTH, this.status.get(KALAH_PLAYER_NORTH) + northStones);
 
         } else if (pitId.equals(KALAH_PLAYER_SOUTH)) {
-            int southStones = 0;
+            Integer southStones = 0;
             //pickup the stones
             for (int s = 1; s <= 6; s++) {
                 southStones += this.status.get(s);
@@ -191,7 +193,7 @@ public class Kalahah {
     }
 
     private boolean pitHasItems(final Integer pitId) {
-        return this.status.get(pitId).intValue() > 0;
+        return this.status.get(pitId) > 0;
     }
 
     private boolean isEmptyPit(final Integer pitId) {
@@ -207,25 +209,25 @@ public class Kalahah {
     }
 
     private boolean isThereOponentStones(final Integer pitId) {
-        return this.status.get(14 - pitId.intValue()) > 0;
+        return this.status.get(14 - pitId) > 0;
     }
 
     private void processLastStoneNEmptyPitToPullOpponentStones(final Integer pitId, final Player turn) {
         switch (turn) {
             case SOUTH:
-                if (pitId.intValue() >= 1 && pitId.intValue() <= 6 && isThereOponentStones(pitId)) {
-                    this.status.put(KALAH_PLAYER_SOUTH, this.status.get(KALAH_PLAYER_SOUTH) + this.status.get(14 - pitId.intValue()) + 1);
+                if (pitId >= 1 && pitId <= 6 && isThereOponentStones(pitId)) {
+                    this.status.put(KALAH_PLAYER_SOUTH, this.status.get(KALAH_PLAYER_SOUTH) + this.status.get(14 - pitId) + 1);
                     //clear the pits
-                    this.status.put(14 - pitId.intValue(), 0);
-                    this.status.put(pitId.intValue(), 0);
+                    this.status.put(14 - pitId, 0);
+                    this.status.put(pitId, 0);
                 }
                 break;
             case NORTH:
-                if (pitId.intValue() >= 8 && pitId.intValue() <= 13 && isThereOponentStones(pitId)) {
-                    this.status.put(KALAH_PLAYER_NORTH, this.status.get(KALAH_PLAYER_NORTH) + this.status.get(14 - pitId.intValue()) + 1);
+                if (pitId >= 8 && pitId <= 13 && isThereOponentStones(pitId)) {
+                    this.status.put(KALAH_PLAYER_NORTH, this.status.get(KALAH_PLAYER_NORTH) + this.status.get(14 - pitId) + 1);
                     //clear the pits
-                    this.status.put(14 - pitId.intValue(), 0);
-                    this.status.put(pitId.intValue(), 0);
+                    this.status.put(14 - pitId, 0);
+                    this.status.put(pitId, 0);
                 }
                 break;
         }
